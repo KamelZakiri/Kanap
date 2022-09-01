@@ -55,39 +55,43 @@ addToCart.addEventListener("click", () => {
         colors: colors.value,
     };
 
-/* Si on veut ajouté un canapé dans le localstorage */
-    let arrayProductsInCart = [];
+let localProduct = JSON.parse(localStorage.getItem(("products")))
+    let findProduct = false ;
+    let position = 0 ; 
 
-    arrayProductsInCart.push(products);
-    localStorage.setItem("products", JSON.stringify(arrayProductsInCart));
-   
-/* Si le localstorage existe on récupere le contenu et on le met dans l'array ce qui renverra le nouveau produit */
-    if (localStorage.getItem("products") !== null) {
-        arrayProductsInCart = JSON.parse(localStorage.getItem("products"));
+    if(newproducts.qty=== 0 || newproducts.colors === ""){
+        alert("Veuillez choisir une couleur ou une quantité")
+        return
+    }
 
-}});
+    
+    if(localProduct){
 
+ console.log(localProduct,"produit")   
+    for(let i=0; i <localProduct.length;i++){
+        
+ /* Je verifie l'id du produit = a l'id du produit du localstorage */
 
+       if( newproducts._id ===  localProduct[i]._id &&
+        newproducts.colors === localProduct[i].colors ) {
+        findProduct = true;
+        position = i;
+        break;
+    }
+    }
+/* Si le produit trouvé est le même j'ajoute la quantité sinon je push un nouveau produit */
 
+if(findProduct===true){
+    localProduct[position].qty = localProduct[position].qty + newproducts.qty
 
+}else{
+    localProduct.push(newproducts)
+}}
+else{
+    localProduct=[]
+    localProduct.push(newproducts)
+}
 
+localStorage.setItem("products",JSON.stringify(localProduct))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})

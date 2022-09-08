@@ -105,7 +105,115 @@ function showTotalprice(prixTotal){
 
 /* Je configure le formulaire avec les regex */
 
-/* je met en commentaire en attendant de finir la partie les regexs que j'vais utilisé pour les différents domaines*/
-/* regex prenom = (/^([a-zA-Z_]){2,20}$/))
-   regex nom = (/^([0-9a-zA-Z_]){2,20}$/))
-   regex adresse = */
+/* Je met l'ensemble des regex que je vais utiliser pour ce formulaire */
+ let regexPrenom = /^([a-zA-Z]){2,20}$/;
+ let regexNom = /^[a-z][A-Z]{2,26}$|^$/i;
+ let regexAdresse = /^([0-9]{1,5}[a-zA-Z]{2,8}[a-zA-Z -.,]{3,40})$/;
+ let regexVille = /^([a-z][A-Z]{2,25}[0-9]{4,7})$/ ;
+ let regexMail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+/* Je prepare les variables concernant les formulaires */
+
+const prenom = document.getElementById('#firstName');
+const nom = document.getElementById('#lastName');
+const adresse = document.getElementById('#address');
+const ville = document.getElementById('#city');
+const mail = document.getElementById('#email');
+
+/* Je mets en place les conditions pour chaque élément présent du formulaire */
+
+/* Nom */
+
+let commanderBouton = document.getElementById('#order')
+
+commanderBouton.addEventListener("click", () => {
+
+let nomError = document.getElementById('#lastNameErrorMsg')
+
+function nomValide () {
+if (regexNom.test(nom) == false) {
+  prenomError.innerHTML = 'Le prénom est invalide'
+  return false;
+  
+} else {
+
+  return true;
+  
+}
+}
+
+nomValide ();
+
+/* Prénom */
+
+const prenomError = document.getElementById('#firstNameErrorMsg')
+
+function prenomValide () {
+  if (regexPrenom.test(prenom) == false) {
+    prenomError.innerHTML = 'Le prénom est invalide'
+    return false;
+    
+  } else {
+    
+    return true;
+    
+  }
+  }
+
+prenomValide ();
+
+/* Adresse */
+
+let adressError = document.getElementById('#addressErrorMsg')
+
+function adresseValide () {
+  if (regexAdresse.test(adresse) == false) {
+   adressError.innerHTML = 'Les données renseignés sont invalide'
+   return false;
+      
+  } else {
+      
+    return true;
+      
+  }
+}
+
+adresseValide();
+
+/* Ville */
+
+const villeError = document.getElementById('#cityErrorMsg')
+
+function villeValide () {
+  if (regexVille.test(ville) == false) {
+    villeError.innerHTML = 'La ville est invalide'
+    return false;
+    
+  } else {
+    
+    return true;
+    
+  }
+  }
+
+  villeValide();
+
+/* Mail */
+
+const mailError = document.getElementById('#emailErrorMsg')
+
+function mailValide () {
+  if (regexMail.test(mail) == false) {
+    mailError.innerHTML = 'Le mail est invalide'
+    return false;
+    
+  } else {
+    
+    return true;
+    
+  }
+  }
+
+  mailValide();
+});
+

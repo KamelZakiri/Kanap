@@ -102,118 +102,129 @@ function showTotalprice(prixTotal){
   }
 
 
-
-/* Je configure le formulaire avec les regex */
+/* Je configure le formulaire avec les regex 
 
 /* Je met l'ensemble des regex que je vais utiliser pour ce formulaire */
- let regexPrenom = /^([a-zA-Z]){2,20}$/;
- let regexNom = /^[a-z][A-Z]{2,26}$|^$/i;
- let regexAdresse = /^([0-9]{1,5}[a-zA-Z]{2,8}[a-zA-Z -.,]{3,40})$/;
- let regexVille = /^([a-z][A-Z]{2,25}[0-9]{4,7})$/ ;
- let regexMail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+function regexPrenom(value){
+return /^[a-z-A-Z\s]{3,20}$/.test(value)
+}
+function regexNom(value){
+return /^[a-z-A-Z\s]{3,26}$/.test(value) 
+}
+function regexAdresse(value){
+return /^[0-9]{1,5}[a-z-A-Z\s]{2,8}[a-z-A-Z -.,]{3,40}$/.test(value)
+}
+function regexVille(value){
+return /^[a-z-A-Z\s]{2,25}[0-9]{4,7}$/.test(value)
+}
+function regexMail(value){
+return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value)
+}
 
 /* Je prepare les variables concernant les formulaires */
 
-const prenom = document.getElementById('#firstName');
-const nom = document.getElementById('#lastName');
-const adresse = document.getElementById('#address');
-const ville = document.getElementById('#city');
-const mail = document.getElementById('#email');
+const prenom = document.getElementById('firstName');
+const nom = document.getElementById('lastName');
+const adresse = document.getElementById('address');
+const ville = document.getElementById('city');
+const mail = document.getElementById('email');
 
 /* Je mets en place les conditions pour chaque élément présent du formulaire */
 
 /* Nom */
 
-let commanderBouton = document.getElementById('#order')
+let nomError = document.getElementById('lastNameErrorMsg'); 
 
-commanderBouton.addEventListener("click", () => {
+nom.addEventListener('change',( ) => {
+if (regexNom(nom.value)) {
+nomError.classList.add('opacity');
+nomError.innerHTML = "";
 
-let nomError = document.getElementById('#lastNameErrorMsg')
-
-function nomValide () {
-if (regexNom.test(nom) == false) {
-  prenomError.innerHTML = 'Le prénom est invalide'
-  return false;
-  
+ 
+ return false;
+ 
 } else {
-
-  return true;
-  
+  nomError.classList.remove('opacity');
+  nomError.innerHTML = "Le Nom est invalide";
+ return true;
+ 
 }
-}
+});
 
-nomValide ();
 
 /* Prénom */
 
-const prenomError = document.getElementById('#firstNameErrorMsg')
+const prenomError = document.getElementById('firstNameErrorMsg')
 
-function prenomValide () {
-  if (regexPrenom.test(prenom) == false) {
-    prenomError.innerHTML = 'Le prénom est invalide'
-    return false;
-    
-  } else {
-    
-    return true;
-    
-  }
-  }
+prenom.addEventListener ('change',() => {
+ if (regexPrenom(prenom.value)) {
+   prenomError.innerHTML = "";
+   return false;
+   
+ } else {
+   prenomError.innerHTML = 'Le prénom est invalide';
+   return true;
+   
+ }
+ })
 
-prenomValide ();
+
 
 /* Adresse */
 
-let adressError = document.getElementById('#addressErrorMsg')
+let adressError = document.getElementById('addressErrorMsg')
 
-function adresseValide () {
-  if (regexAdresse.test(adresse) == false) {
-   adressError.innerHTML = 'Les données renseignés sont invalide'
-   return false;
-      
-  } else {
-      
-    return true;
-      
-  }
-}
+adresse.addEventListener ('change',() => {
+ if (regexAdresse(adresse.value)) {
+  adressError.innerHTML = "";
+  return false;
+     
+ } else {
+    adressError.innerHTML = 'Les données renseignés sont invalides';
+   return true;
+     
+ }
+});
 
-adresseValide();
+
 
 /* Ville */
 
-const villeError = document.getElementById('#cityErrorMsg')
+const villeError = document.getElementById('cityErrorMsg')
 
-function villeValide () {
-  if (regexVille.test(ville) == false) {
-    villeError.innerHTML = 'La ville est invalide'
-    return false;
-    
-  } else {
-    
-    return true;
-    
-  }
-  }
+ville.addEventListener ('change',() => {
+ if (regexVille(ville.value)) {
+   villeError.innerHTML = "";
+   return false;
+   
+ } else {
+   villeError.innerHTML = 'La ville est invalide';
+   return true;
+   
+ }
+ });
 
-  villeValide();
+
 
 /* Mail */
 
-const mailError = document.getElementById('#emailErrorMsg')
+const mailError = document.getElementById('emailErrorMsg')
 
-function mailValide () {
-  if (regexMail.test(mail) == false) {
-    mailError.innerHTML = 'Le mail est invalide'
-    return false;
-    
-  } else {
-    
-    return true;
-    
-  }
-  }
+mail.addEventListener ('change',() => {
+ if (regexMail(mail.value)) {
+   mailError.innerHTML = "";
+   return false;
+   
+ } else {
+   mailError.innerHTML = 'Le mail est invalide';
+   return true;
+   
+ }
+ });
 
-  mailValide();
-});
+
+
+
+
+
 

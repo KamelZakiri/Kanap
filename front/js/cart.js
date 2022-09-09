@@ -55,31 +55,42 @@ title.innerHTML += `<h1>Votre panier est vide</h1>`
 
 /* Je rajoute le calcul du montant final des canapés ainsi que les quantités */
     
+const totalProduit = () => {
 
-    let prixPanier = data.price ;
-    let quantiteProduit = items[i].qty
+        let quantiteProduit = document.getElementsByClassName('itemQuantity');
+        let totalQtyProduit = quantiteProduit.length;
+        let totalItems = 0;
+        const cart = document.querySelectorAll(".cart__item");
 
-   prixTotalCalcul = prixPanier * quantiteProduit ;
-   prixTotal = prixTotal + (items[i].qty * parseInt(data.price))
+        for (let j = 0; j < totalQtyProduit; j++) {
 
-  showTotalprice(prixTotal)
+          totalItems += quantiteProduit[j].valueAsNumber;
 
-   console.log("data_price",data.price)
+        }
+
+        let totalPriceFinal = 0;
+
+        for (let k = 0; k < totalQtyProduit; k++) {
+
+          totalPriceFinal += quantiteProduit[k].valueAsNumber * data.price;
+          console.log(quantiteProduit[k].price);
+
+        }
+        let totalQuantite = document.getElementById('totalQuantity');
+        totalQuantite.innerHTML = totalItems;
+
+        let prixFinal = document.getElementById('totalPrice');
+        prixFinal.innerHTML = totalPriceFinal;
+
+      }
+
+      totalProduit();
 
 
 
-
- 
-
+ });
 
 
- console.table(prixTotalCalcul);
-
- /*let prixFinal = document.getElementById('#totalPrice');
- prixFinal.innerHTML = "";
-
- let qtyFinal = document.getElementById('#totalQuantity');
- qtyFinal.innerHTML = "";*/
 
 
  /* Je mets en place l'option pour supprimer un article */

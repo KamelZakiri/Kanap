@@ -52,65 +52,60 @@ title.innerHTML += `<h1>Votre panier est vide</h1>`
                   </article>`;
 
 
-
 /* Je rajoute le calcul du montant final des canapés ainsi que les quantités */
-    
-const totalProduit = () => {
 
-        let quantiteProduit = document.getElementsByClassName('itemQuantity');
-        let totalQtyProduit = quantiteProduit.length;
-        let totalItems = 0;
+      function totalProduit() {
+
+        /* Je déclare mes variables à 0 */
+
+        let totalArticle = 0;
+        let totalPrix = 0;
+
+        /* Je séléctionne l'élément */
+
         const cart = document.querySelectorAll(".cart__item");
 
-        for (let j = 0; j < totalQtyProduit; j++) {
+        /* Je prépare les éléments pour chaque partie du panier */
 
-          totalItems += quantiteProduit[j].valueAsNumber;
+        cart.forEach((cart) => {
 
-        }
+          /* Je récupère les quantités des produits */
 
-        let totalPriceFinal = 0;
+          totalArticle += cart.querySelector(".itemQuantity").valueAsNumber;
 
-        for (let k = 0; k < totalQtyProduit; k++) {
 
-          totalPriceFinal += quantiteProduit[k].valueAsNumber * data.price;
-          console.log(quantiteProduit[k].price);
+          /* J'effectue le calcul du prix total */
 
-        }
-        let totalQuantite = document.getElementById('totalQuantity');
-        totalQuantite.innerHTML = totalItems;
+          let productPrice = parseInt(
+            cart
+              .querySelector(".cart__item__content__description")
+              .lastElementChild.textContent.slice(0, -1)
+              .split(" ")
+              .join("")
+          );
+          totalPrix +=
+            parseInt(cart.querySelector(".itemQuantity").value) * productPrice;
+        });
 
-        let prixFinal = document.getElementById('totalPrice');
-        prixFinal.innerHTML = totalPriceFinal;
+        /* Je pointe l'endroit d'affichage du total des articles du panier */
+
+        document.getElementById("totalQuantity").textContent = totalArticle;
+
+        /* Je pointe l'endroit d'affichage du prix total du panier */
+
+        document.getElementById("totalPrice").textContent = (totalPrix);
 
       }
-
       totalProduit();
-
-
-
- });
-
-
-
-
- /* Je mets en place l'option pour supprimer un article */
-
-/* let deleteItem = document.getElementsByClassName('deleteItem');
-
- deleteItem.addEventListener("click", () => {
-  localStorage.clear(items[i].qty);
-});*/
-
-  });
-  };   
-
+    });
 }
 
-console.log("Totale_Price",prixTotalCalcul)
+/* J'ajoute la possibilité de rajouter et de supprimer des articles */
 
-function showTotalprice(prixTotal){
-  console.log(prixTotal,"total")
-  }
+
+
+
+
 
 
 /* Je configure le formulaire avec les regex 

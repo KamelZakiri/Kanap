@@ -104,30 +104,20 @@ title.innerHTML += `<h1>Votre panier est vide</h1>`
 
  /* Supprimer des quantités */
 
-// Créer un élément <div> et ajoutez-le au document : 
-let divContentSettingsDelete = document.createElement("div");
-// ajouter la classe CSS cart__item__content__settings__delete à divContentSettingsDelete. 
-divContentSettingsDelete.classList.add("cart__item__content__settings__delete");
-// ajouter divContentSettingsDelete en tant que enfant de l'élément divContentSettings:
-divContentSettings.appendChild(divContentSettingsDelete);
+/* Supprimer des quantités */
 
-
-// Créer un élément <p> et ajoutez-le au document : 
-let paragrapheDelete = document.createElement("p");
-// ajouter la classe CSS deleteItem à paragrapheDelete.
-paragrapheDelete.classList.add("deleteItem");
-// ajouter le contenu de la balise p
-paragrapheDelete.innerHTML = "Supprimer";
-// ajouter paragrapheDelete en tant que enfant de l'élément divContentSettingsDelete:
-divContentSettingsDelete.appendChild(paragrapheDelete);
+let deleteItem = document.getElementsByClassName("deleteItem");
+console.log("option suppression", deleteItem);
+console.log("produit panier", items)
 
 // créer l'événement click du suppression
-paragrapheDelete.addEventListener("click", () => {
+deleteItem.addEventListener("click", (e) => {
 
   // pour chaque produit du tableau items
   for (let j = 0; j < items.length; j++) {
+
     // si id et couleur du produit sont identiques a ceux d'un produit dans le localstorge
-    if (product.productId === items[j]._id && product.couleur === items[j].colors) {
+    if (product[j]._id === items[j]._id && product[j].colors === items[j].colors) {
       // retirer l'élément ayant la position j du tableau items 
       // 1>0 donc on va supprimer 
       items.splice(j, 1);
@@ -136,9 +126,9 @@ paragrapheDelete.addEventListener("click", () => {
     }
   }
   // stocker products au localStorage
-  localStorage.setItem("products", JSON.stringify(localStorageProducts));
+  localStorage.setItem("products", JSON.stringify(items));
 
-})
+});
 
 
 

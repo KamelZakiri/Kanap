@@ -57,25 +57,20 @@ title.innerHTML += `<h1>Votre panier est vide</h1>`
       function totalProduit() {
 
         /* Je déclare mes variables à 0 */
-
         let totalArticle = 0;
         let totalPrix = 0;
 
         /* Je séléctionne l'élément */
-
         const cart = document.querySelectorAll(".cart__item");
 
         /* Je prépare les éléments pour chaque partie du panier */
-
         cart.forEach((cart) => {
 
           /* Je récupère les quantités des produits */
-
           totalArticle += cart.querySelector(".itemQuantity").valueAsNumber;
 
 
           /* J'effectue le calcul du prix total */
-
           let productPrice = parseInt(
             cart
               .querySelector(".cart__item__content__description")
@@ -88,11 +83,9 @@ title.innerHTML += `<h1>Votre panier est vide</h1>`
         });
 
         /* Je pointe l'endroit d'affichage du total des articles du panier */
-
         document.getElementById("totalQuantity").textContent = totalArticle;
 
         /* Je pointe l'endroit d'affichage du prix total du panier */
-
         document.getElementById("totalPrice").textContent = (totalPrix);
 
       }

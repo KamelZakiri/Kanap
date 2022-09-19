@@ -102,33 +102,71 @@ title.innerHTML += `<h1>Votre panier est vide</h1>`
 
 /* J'ajoute la possibilité de rajouter et de supprimer des articles */
 
- /* Supprimer des quantités */
+function updateQuantity() {
 
-/* Supprimer des quantités */
+  const quantity = document.getElementsByClassName(".itemQuantity");
+  for (let updateQuantity of quantity) {
+    updateQuantity.addEventListener("change", (eq) => {
+      for (let j = 0; j < items.length; j++) {
+        let article = updateQuantity.closest("article");
+        if (
+          product[j]._id === items[j]._id &&
 
-let deleteItem = document.getElementsByClassName("deleteItem");
-console.log("option suppression", deleteItem);
-console.log("produit panier", items)
+          product[j].colors === items[j].colors &&
+          eq.target.value >= 1 &&
+          eq.target.value <= 100
+        ) {
+          console.log(product[j]._id);
+          items[j].qty = parseInt(eq.target.value);
+          localStorage.products = JSON.stringify(items);
 
-// créer l'événement click du suppression
-deleteItem.addEventListener("click", (e) => {
-
-  // pour chaque produit du tableau items
-  for (let j = 0; j < items.length; j++) {
-
-    // si id et couleur du produit sont identiques a ceux d'un produit dans le localstorge
-    if (product[j]._id === items[j]._id && product[j].colors === items[j].colors) {
-      // retirer l'élément ayant la position j du tableau items 
-      // 1>0 donc on va supprimer 
-      items.splice(j, 1);
-      // actualiser la page
-      window.location.reload();
-    }
+          totalProduit();
+        } else if (eq.target.value < 1 || eq.target.value > 100) {
+          alert(
+            "Indiquez des quantités Valide SVP [comprises entre 1 et 100]"
+          );
+          updateQuantity.value = article.dataset.quantité;
+        }
+      }
+    });
   }
-  // stocker products au localStorage
-  localStorage.setItem("products", JSON.stringify(items));
+}
 
-});
+
+// fonction qui gère la suppremier des produits
+function deleteProduct() {
+
+  // creation variable pour stocker le boutton supprimé
+  const deleteButton = document.getElementsByClassName("deleteItem");
+
+  // Pour chaque click sur un bouton delete
+  for (let click of deleteButton) {
+    // Ecoute du clique sur un bouton supprimé
+    click.addEventListener("click", (ec) => {
+      if (window.confirm("Voulez vous supprimer cet article?")) {
+        let article = click.closest("article");
+        // supression de l'article dans le dom
+        article.remove();
+        for (let k = 0, l = items.length; k < l; k++) {
+          let foundProduct = items.find(
+            (p) =>
+              p._id == article.dataset.id &&
+              p.color == article.dataset.color
+          );
+          // filtre sur le panier, pour ne garder que les produits où l'on a pas cliqué sur supprimer
+          items = items.filter((p) => p != foundProduct);
+          localStorage.products = JSON.stringify(items);
+          totalProduit();
+        }
+      }
+    });
+  }
+}
+
+updateQuantity();
+deleteProduct();
+
+
 
 
 

@@ -285,10 +285,8 @@ for (let input of document.querySelector(".cart__order__form")) {
   }
 }
 
-// Fetch POST
-
 // J'écoute le bouton "commander" au click
-// vérification du formulaire et du panier
+// Je lance la verification du formulaire et du panier
 document.getElementById("order").addEventListener("click", (e) => {
   e.preventDefault();
   let formValidity = Object.values(isValidInputs).includes(false);
@@ -329,7 +327,8 @@ function postOrder() {
       products,
   };
 
-  // Fonction fetch avec methode post "envoi"
+  // Fetch POST
+  
   fetch("http://localhost:3000/api/products/order", {
       method: "POST",
       headers: {

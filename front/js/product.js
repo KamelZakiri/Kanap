@@ -82,8 +82,8 @@ let localProduct = JSON.parse(localStorage.getItem(("products")))
 /* Si le produit trouvé est le même j'ajoute la quantité sinon je push un nouveau produit */
 
 if(findProduct===true){
-    localProduct[position].qty = localProduct[position].qty + newproducts.qty
-
+    localProduct[position].qty = parseInt(localProduct[position].qty) + parseInt(newproducts.qty)
+    
 }else{
     localProduct.push(newproducts)
 }}

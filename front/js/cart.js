@@ -1,294 +1,358 @@
-/* Je récupère le panier du localStorage */
+// Je récupère les données stocké dans localStorage en JSON
+let localStorageProducts = JSON.parse(localStorage.getItem("products"));
 
-let items = JSON.parse(localStorage.getItem("products"));
-let basketKanap = document.querySelector('#cart__items');
-let prixTotalCalcul = [];
+let prixTotale = 0;
+nbrTotal(localStorageProducts.length);
 
-/* Je crée une boucle for pour afficher tout les produits du panier */
+// Je boucle sur les produits stocké dans le localstorage 
+for (let product of localStorageProducts) {
 
-let title = document.getElementById('#cartAndFormContainer')
-if (items === 0){
-title.innerHTML += `<h1>Votre panier est vide</h1>`
-}else {
-  let prixTotal = 0;
-  for (let i = 0; i < items.length; i++) {  
+  console.log(product._id, "P")
+  //Je requête l'API pour récuperer le reste des info necessaire a la construction de notre panier
+  const productUrl = "http://localhost:3000/api/products/" + product._id;
 
+  fetch(productUrl)
 
-/* Je rajoute un [i] pour pouvoir avoir l'id de chaque item déclarer dans le localstorage */
-
-            let itemId = items[i]._id;
-            let itemUrl = `http://localhost:3000/api/products/${itemId}`;
-
-            fetch(itemUrl)
-                .then(function (res) {
-                    if (res.ok) {
-                        return res.json();
-                    }
-                })
-
-                .then((data) => {
-
-                    /*console.table(data.price)*/
-                    basketKanap.innerHTML +=`<article class="cart__item" data-id="${items[i]._id}" data-color="${items[i].colors}">
-                    <div class="cart__item__img">
-                      <img src="${data.imageUrl}" alt="${data.altTxt}">
-                    </div>
-                    <div class="cart__item__content">
-                      <div class="cart__item__content__description">
-                        <h2>${data.name}</h2>
-                        <p>${items[i].colors}</p>
-                        <p>${data.price} €</p>
-                      </div>
-                      <div class="cart__item__content__settings">
-                        <div class="cart__item__content__settings__quantity">
-                          <p>Qté :</p>
-                          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${items[i].qty}">
-                        </div>
-                        <div class="cart__item__content__settings__delete">
-                          <p class="deleteItem">Supprimer</p>
-                        </div>
-                      </div>
-                    </div>
-                  </article>`;
-
-
-/* Je rajoute le calcul du montant final des canapés ainsi que les quantités */
-
-      function totalProduit() {
-
-        /* Je déclare mes variables à 0 */
-        let totalArticle = 0;
-        let totalPrix = 0;
-
-        /* Je séléctionne l'élément */
-        const cart = document.querySelectorAll(".cart__item");
-
-        /* Je prépare les éléments pour chaque partie du panier */
-        cart.forEach((cart) => {
-
-          /* Je récupère les quantités des produits */
-          totalArticle += cart.querySelector(".itemQuantity").valueAsNumber;
-
-
-          /* J'effectue le calcul du prix total */
-          let productPrice = parseInt(
-            cart
-              .querySelector(".cart__item__content__description")
-              .lastElementChild.textContent.slice(0, -1)
-              .split(" ")
-              .join("")
-          );
-          totalPrix +=
-            parseInt(cart.querySelector(".itemQuantity").value) * productPrice;
-        });
-
-        /* Je pointe l'endroit d'affichage du total des articles du panier */
-        document.getElementById("totalQuantity").textContent = totalArticle;
-
-        /* Je pointe l'endroit d'affichage du prix total du panier */
-        document.getElementById("totalPrice").textContent = (totalPrix);
-
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
       }
-      totalProduit();
+    })
+
+    // ce qui est été traiter en json sera appelé item
+    .then(function (item) {
+      afficherProductPanier(item);
+    })
+
+    // En cas d'erreur h1 au contenu de erreur 404 et renvoit en console l'erreur.
+    .catch((err) => {
+      document.querySelector(".titles").innerHTML = "<h1>erreur 404</h1>";
+      console.log("erreur 404, sur ressource api:" + err);
     });
-}
 
-/* J'ajoute la possibilité de rajouter et de supprimer des articles */
+  function afficherProductPanier(item) {
+    console.log(item, "item")
 
-function updateQuantity() {
+    // Créer un élément <article> et ajoutez-le au document :
+    let ArticlePanier = document.createElement("article");
+    // ajouter la classe CSS cart__item à ArticlePanier.
+    ArticlePanier.classList.add("cart__item");
+    // ajouter la data-id
+    ArticlePanier.dataset.id = product.productId;
+    // ajouter la data-color
+    ArticlePanier.dataset.color = product.couleur;
+    // ajouter ArticlePanier en tant que enfant de l'élément avec l'id="cart__items": 
+    document.querySelector("#cart__items").appendChild(ArticlePanier);
 
-  const quantity = document.getElementsByClassName(".itemQuantity");
-  for (let updateQuantity of quantity) {
-    updateQuantity.addEventListener("change", (eq) => {
-      for (let j = 0; j < items.length; j++) {
-        let article = updateQuantity.closest("article");
-        if (
-          product[j]._id === items[j]._id &&
 
-          product[j].colors === items[j].colors &&
-          eq.target.value >= 1 &&
-          eq.target.value <= 100
-        ) {
-          console.log(product[j]._id);
-          items[j].qty = parseInt(eq.target.value);
-          localStorage.products = JSON.stringify(items);
+    // Créer un élément <div> et ajoutez-le au document :
+    let div = document.createElement("div");
+    // ajouter la classe CSS cart__item__img à div.
+    div.classList.add("cart__item__img");
+    // ajouter div en tant que enfant de l'élément ArticlePanier: 
+    ArticlePanier.appendChild(div);
 
-          totalProduit();
-        } else if (eq.target.value < 1 || eq.target.value > 100) {
-          alert(
-            "Indiquez des quantités Valide SVP [comprises entre 1 et 100]"
-          );
-          updateQuantity.value = article.dataset.quantité;
+    // Créer un élément <img> et ajoutez-le au document :
+    let imgArticle = document.createElement("img");
+    // ajouter l'image du produit
+    imgArticle.src = item.imageUrl;
+    // ajouter imgArticle en tant que enfant de l'élément div: 
+    div.appendChild(imgArticle);
+
+
+    // Créer un élément <div> et ajoutez-le au document :
+    let divContent = document.createElement("div");
+    // ajouter la classe CSS cart__item__content à divContent.
+    divContent.classList.add("cart__item__content");
+    // ajouter divContent en tant que enfant de l'élément ArticlePanier: 
+    ArticlePanier.appendChild(divContent);
+
+
+    // Créer un élément <div> et ajoutez-le au document :
+    let divContentDescription = document.createElement("div");
+    // ajouter la classe CSS cart__item__content__description à divContentDescription.
+    divContentDescription.classList.add("cart__item__content__description");
+    // ajouter divContentDescription en tant que enfant de l'élément divContent: 
+    divContent.appendChild(divContentDescription);
+
+
+    // Créer un élément <h2> et ajoutez-le au document :
+    let title = document.createElement("h2");
+    // ajouter le nom du produit
+    title.innerHTML = item.name;
+    // ajouter title en tant que enfant de l'élément divContentDescription: 
+    divContentDescription.appendChild(title);
+
+
+    // Créer un élément <p> et ajoutez-le au document :
+    let paragrapheColor = document.createElement("p");
+    // ajouter la couleur du produit
+    paragrapheColor.innerHTML = product.colors;
+    // ajouter paragrapheColor en tant que enfant de l'élément divContentDescription:
+    divContentDescription.appendChild(paragrapheColor);
+
+
+    // Créer un élément <p> et ajoutez-le au document :
+    let paragraphePrice = document.createElement("p");
+    // ajouter le prix du produit
+    paragraphePrice.innerHTML = item.price += " " + "\u20AC";
+    // ajouter paragraphePrice en tant que enfant de l'élément divContentDescription:
+    divContentDescription.appendChild(paragraphePrice);
+
+
+    // Créer un élément <div> et ajoutez-le au document :
+    let divContentSettings = document.createElement("div");
+    // ajouter la classe CSS cart__item__content__settings à divContentSettings. 
+    divContentSettings.classList.add("cart__item__content__settings");
+    // ajouter divContentSettings en tant que enfant de l'élément divContentSettings:
+    divContent.appendChild(divContentSettings);
+
+    // Créer un élément <div> et ajoutez-le au document :
+    let divContentSettingsQuantity = document.createElement("div");
+    // ajouter la classe CSS cart__item__content__settings__quantity à divContentSettingsQuantity. 
+    divContentSettingsQuantity.classList.add("cart__item__content__settings__quantity");
+    // ajouter divContentSettingsQuantity en tant que enfant de l'élément divContentSettings:
+    divContentSettings.appendChild(divContentSettingsQuantity);
+
+    // Créer un élément <p> et ajoutez-le au document :
+    let paragrapheQuantity = document.createElement("p");
+    // Ajouter Qté à la balise p
+    paragrapheQuantity.innerHTML = "Qté :";
+    // ajouter paragrapheQuantity en tant que enfant de l'élément divContentSettingsQuantity:
+    divContentSettingsQuantity.appendChild(paragrapheQuantity);
+
+
+    // Créer un élément <input> et ajoutez-le au document :
+    let itemQuantity = document.createElement("input");
+    // ajouter la classe CSS itemQuantity à itemQuantity.
+    itemQuantity.classList.add("itemQuantity");
+    // Ajouter les attributs de l'input
+    itemQuantity.setAttribute("name", "itemQuantity");
+    itemQuantity.setAttribute("type", "number");
+    itemQuantity.setAttribute("min", "1");
+    itemQuantity.setAttribute("max", "100");
+    itemQuantity.setAttribute("value", product.qty);
+    divContentSettingsQuantity.appendChild(itemQuantity);
+
+
+    // Je crée l'événement de modification de type change
+    itemQuantity.addEventListener("change", updateValue);
+    // Je crée la fonction de updateValue 
+    function updateValue() {
+      // pour chaque produit du tableau localStorageProducts
+      for (let i = 0; i < localStorageProducts.length; i++) {
+        // si id et couleur du produit sont identiques a ceux d'un produit dans le localstorge
+        if (product._id === localStorageProducts[i]._id && product.colors === localStorageProducts[i].colors) {
+          // eliminer le prix de ce produit de la somme totale
+          prixTotale = prixTotale - (localStorageProducts[i].qty * parseInt(item.price));
+          // la quantité du produit devient la valeur (nombre) de notre champ itemQuantity
+          localStorageProducts[i].qty = parseInt(itemQuantity.value, 10);
+          // Ajouter le prix avec la nouvelle quantité
+          prixTotale = prixTotale + (localStorageProducts[i].qty * parseInt(item.price));
+          // afficher la somme totale des prix grace a la fonction prixTotal 
+          prixTotal(prixTotale);
+          break;
         }
       }
-    });
+      // stocker products au localStorage
+      localStorage.setItem("products", JSON.stringify(localStorageProducts));
+    }
+
+
+    // Créer un élément <div> et ajoutez-le au document : 
+    let divContentSettingsDelete = document.createElement("div");
+    // ajouter la classe CSS cart__item__content__settings__delete à divContentSettingsDelete. 
+    divContentSettingsDelete.classList.add("cart__item__content__settings__delete");
+    // ajouter divContentSettingsDelete en tant que enfant de l'élément divContentSettings:
+    divContentSettings.appendChild(divContentSettingsDelete);
+
+
+    // Créer un élément <p> et ajoutez-le au document : 
+    let paragrapheDelete = document.createElement("p");
+    // ajouter la classe CSS deleteItem à paragrapheDelete.
+    paragrapheDelete.classList.add("deleteItem");
+    // ajouter le contenu de la balise p
+    paragrapheDelete.innerHTML = "Supprimer";
+    // ajouter paragrapheDelete en tant que enfant de l'élément divContentSettingsDelete:
+    divContentSettingsDelete.appendChild(paragrapheDelete);
+
+    // Je crée l'événement click du suppression
+    paragrapheDelete.addEventListener("click", () => {
+
+      // pour chaque produit du tableau localStorageProducts
+      for (let j = 0; j < localStorageProducts.length; j++) {
+        // si id et couleur du produit sont identiques a ceux d'un produit dans le localstorge
+        if (product._id === localStorageProducts[j]._id && product.colors === localStorageProducts[j].colors) {
+          // retirer l'élément ayant laposition j du tableau localStorageProducts 
+          // 1>0 donc on va supprimer 
+          localStorageProducts.splice(j, 1);
+          // actualiser la page
+          window.location.reload();
+        }
+      }
+      // Je stocke products au localStorage
+      localStorage.setItem("products", JSON.stringify(localStorageProducts));
+
+    })
+    // prixTotale initialiser a 0 et a chaque fois on fait le calcule 
+    prixTotale = prixTotale + (parseInt(item.price) * parseInt(product.qty));
+    prixTotal(prixTotale);
+  }
+}
+function prixTotal(prixTotale) {
+  document.getElementById("totalPrice").innerHTML = prixTotale;
+}
+// J'affiche le nbr Total des articles qui egale au nbr des elements du tableau du localstorage 
+function nbrTotal(nbrArticles) {
+  document.getElementById("totalQuantity").innerHTML = nbrArticles;
+}
+
+// Je mets en place une fonction qui retourne le tableau du LS
+function getLs() {
+  // variable qui stock ce que l'on appel dans le localStorage
+  let localStorageProducts = localStorage.getItem("products");
+  // si le panier est false (vide)
+  if (!localStorageProducts) {
+      // retourne un tableau vide
+      return [];
+  } else {
+      // retourne le tableau stocké dans le localStorage
+      return JSON.parse(localStorageProducts);
   }
 }
 
+// Form et Regex
 
-// fonction qui gère la suppremier des produits
-function deleteProduct() {
+// Je mets en place l'initialisation de l'objet contact
+let contact = {
+  firstName: "",
+  lastName: "",
+  address: "",
+  city: "",
+  email: "",
+};
 
-  // creation variable pour stocker le boutton supprimé
-  const deleteButton = document.getElementsByClassName("deleteItem");
+// Je mets en place une variable qui stock si les inputs sont valides ou non
+let isValidInputs = {
+  firstName: false,
+  lastName: false,
+  address: false,
+  city: false,
+  email: false,
+};
+// Je défini les différentes RegExp dans une constante
+const regExpList = {
+  firstName: new RegExp("(^[a-zA-Zéè -]{2,20}$)"),
+  lastName: new RegExp("(^[a-zA-Z -]{2,30}$)"),
+  address: new RegExp("(^[a-zA-Zéè 0-9,-]{4,50}$)"),
+  city: new RegExp("(^[a-zA-Zàéè -]{4,30}$)"),
+  email: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
+};
 
-  // Pour chaque click sur un bouton delete
-  for (let click of deleteButton) {
-    // Ecoute du clique sur un bouton supprimé
-    click.addEventListener("click", (ec) => {
-      if (window.confirm("Voulez vous supprimer cet article?")) {
-        let article = click.closest("article");
-        // supression de l'article dans le dom
-        article.remove();
-        for (let k = 0, l = items.length; k < l; k++) {
-          let foundProduct = items.find(
-            (p) =>
-              p._id == article.dataset.id &&
-              p.color == article.dataset.color
-          );
-          // filtre sur le panier, pour ne garder que les produits où l'on a pas cliqué sur supprimer
-          items = items.filter((p) => p != foundProduct);
-          localStorage.products = JSON.stringify(items);
-          totalProduit();
-        }
+// Je mets en place une fonction qui vérifie les inputs et les stockes
+function checkUserInformations(input, regex, id) {
+  if (regex.test(input.value)) {
+      input.style.border = "2px solid Green";
+      document.getElementById(`${id}ErrorMsg`).innerText = "";
+      contact[id] = input.value;
+      isValidInputs[id] = true;
+  } else {
+      input.style.border = "2px solid Red";
+      isValidInputs[id] = false;
+      if (id == "firstName" || id == "lastName") {
+          document.getElementById(`${id}ErrorMsg`).innerText =
+              'Le format est incorrect (ex : "Jean")';
+      } else if (id == "email") {
+          document.getElementById(`${id}ErrorMsg`).innerText =
+              'Le format du mail est incorrect (ex: " jeanhakim@hotmail.com ")';
+      } else {
+          document.getElementById(`${id}ErrorMsg`).innerText =
+              "L'information renseignée n'est pas valide";
       }
-    });
   }
 }
 
-updateQuantity();
-deleteProduct();
-
-
-
-
-
-
-
-
-/* Je configure le formulaire avec les regex 
-
-/* Je met l'ensemble des regex que je vais utiliser pour ce formulaire */
-function regexPrenom(value){
-return /^[a-z-A-Z\s]{3,20}$/.test(value)
-}
-function regexNom(value){
-return /^[a-z-A-Z\s]{3,26}$/.test(value) 
-}
-function regexAdresse(value){
-return /^[0-9]{1,5}[a-z-A-Z\s]{2,8}[a-z-A-Z -.,]{3,40}$/.test(value)
-}
-function regexVille(value){
-return /^[a-z-A-Z\s]{2,25}[0-9]{4,7}$/.test(value)
-}
-function regexMail(value){
-return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value)
+// J'appel la fonction de validité et de stockage des inputs à l'aide d'une boucle
+for (let input of document.querySelector(".cart__order__form")) {
+  if (input.type == "text" || input.type == "email") {
+      input.addEventListener("change", (e) => {
+          checkUserInformations(
+              e.target,
+              regExpList[e.target.id],
+              e.target.id
+          );
+      });
+  }
 }
 
-/* Je prepare les variables concernant les formulaires */
+// Fetch POST
 
-const prenom = document.getElementById('firstName');
-const nom = document.getElementById('lastName');
-const adresse = document.getElementById('address');
-const ville = document.getElementById('city');
-const mail = document.getElementById('email');
-
-/* Je mets en place les conditions pour chaque élément présent du formulaire */
-
-/* Nom */
-
-let nomError = document.getElementById('lastNameErrorMsg'); 
-
-nom.addEventListener('change',( ) => {
-if (regexNom(nom.value)) {
-nomError.classList.add('opacity');
-nomError.innerHTML = "";
-
- 
- return false;
- 
-} else {
-  nomError.classList.remove('opacity');
-  nomError.innerHTML = "Le Nom est invalide";
- return true;
- 
-}
+// J'écoute le bouton "commander" au click
+// vérification du formulaire et du panier
+document.getElementById("order").addEventListener("click", (e) => {
+  e.preventDefault();
+  let formValidity = Object.values(isValidInputs).includes(false);
+  let localStorageProducts = JSON.parse(localStorage.getItem("products"));
+  getLs();
+  if (formValidity === true && (localStorageProducts === [] || localStorageProducts === null)) {
+      alert(
+          "Les données renseignées dans le formulaire ne sont pas valides ou ne sont pas remplies et votre panier est vide"
+      );
+      return;
+  } else if (formValidity === true && localStorageProducts.length != 0) {
+      alert(
+          "Les données renseignées dans le formulaire ne sont pas valides ou ne sont pas remplies"
+      );
+      return;
+  } else if (formValidity === false && (localStorageProducts === [] || localStorageProducts === null)) {
+      alert("Le panier est vide");
+      return;
+  } else {
+      //appel de la fonction d'envoi de la commande
+      postOrder();
+  }
 });
 
+// Fonction d'envoi de la commande
+// initialisation d'un tableau à 0 pour stocker les ID des produits
+function postOrder() {
+  let localStorageProducts = JSON.parse(localStorage.getItem("products"));
+  let products = [];
+  // ajout de chaque id par produit dans un tableau produit
+  for (let k = 0; k < localStorageProducts.length; k++) {
+      products.push(localStorageProducts[k]._id);
+  }
 
-/* Prénom */
+  // Je mets en place la variable data avec les éléments nécessaires concernant les produits et le formulaire
+  let data = {
+      contact,
+      products,
+  };
 
-const prenomError = document.getElementById('firstNameErrorMsg')
-
-prenom.addEventListener ('change',() => {
- if (regexPrenom(prenom.value)) {
-   prenomError.innerHTML = "";
-   return false;
-   
- } else {
-   prenomError.innerHTML = 'Le prénom est invalide';
-   return true;
-   
- }
- })
-
-
-
-/* Adresse */
-
-let adressError = document.getElementById('addressErrorMsg')
-
-adresse.addEventListener ('change',() => {
- if (regexAdresse(adresse.value)) {
-  adressError.innerHTML = "";
-  return false;
-     
- } else {
-    adressError.innerHTML = 'Les données renseignés sont invalides';
-   return true;
-     
- }
-});
-
-
-
-/* Ville */
-
-const villeError = document.getElementById('cityErrorMsg')
-
-ville.addEventListener ('change',() => {
- if (regexVille(ville.value)) {
-   villeError.innerHTML = "";
-   return false;
-   
- } else {
-   villeError.innerHTML = 'La ville est invalide';
-   return true;
-   
- }
- });
-
-
-
-/* Mail */
-
-const mailError = document.getElementById('emailErrorMsg')
-
-mail.addEventListener ('change',() => {
- if (regexMail(mail.value)) {
-   mailError.innerHTML = "";
-   return false;
-   
- } else {
-   mailError.innerHTML = 'Le mail est invalide';
-   return true;
-   
- }
- });
-
-
-
-
-
-
-
+  // Fonction fetch avec methode post "envoi"
+  fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+  })
+      .then((res) => {
+          if (res.status == 201) {
+              alert("Votre commande a bien été validée");
+              return res.json();
+          } else if (res.status !== 201) {
+              alert(
+                  "une erreur est survenue lors de l'envoi du formulaire, veuillez réessayer"
+              );
+          }
+      })
+      .then((res) => {
+          // Vide le localStorage
+          localStorage.clear();
+          // Ouvre la page de confirmation avec le numéro de commande dans l'URL
+          window.location.href = `../html/confirmation.html?order_id=${res.orderId}`;
+      })
+      .catch((error) => console.log("Erreur : " + error));
+}
